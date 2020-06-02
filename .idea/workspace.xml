@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="800edb2b-1ba1-4744-b76e-76533d74d9b4" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1afej17UxdzVEfxlmJawkDzKyVA" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Libraries" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\79621\OneDrive - ITMO UNIVERSITY\ИТМО\Программирование\Лабораторные\Лаб6\src\ru\ifmo\se\lab6\collection" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Client">
+    <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ru.ifmo.se.lab6.client.Client" />
+      <module name="Лаб6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.ifmo.se.lab6.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ProductCollection" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ru.ifmo.se.lab6.server.ProductCollection" />
+      <module name="Лаб6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.ifmo.se.lab6.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ru.ifmo.se.lab6.server.Server" />
+      <module name="Лаб6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.ifmo.se.lab6.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ru.ifmo.se.lab6.client.Test" />
+      <module name="Лаб6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.ifmo.se.lab6.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestUnBlocking" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ru.ifmo.se.lab6.server.TestUnBlocking" />
+      <module name="Лаб6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ru.ifmo.se.lab6.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Client" />
+        <item itemvalue="Application.Server" />
+        <item itemvalue="Application.Test" />
+        <item itemvalue="Application.TestUnBlocking" />
+        <item itemvalue="Application.ProductCollection" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="800edb2b-1ba1-4744-b76e-76533d74d9b4" name="Default Changelist" comment="" />
+      <created>1587131206681</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1587131206681</updated>
+      <workItem from="1587131211668" duration="6000" />
+      <workItem from="1589355327559" duration="24983000" />
+      <workItem from="1590061353887" duration="9601000" />
+      <workItem from="1590081424461" duration="10247000" />
+      <workItem from="1590141202644" duration="18466000" />
+      <workItem from="1590186578288" duration="4690000" />
+      <workItem from="1590320311116" duration="14555000" />
+      <workItem from="1590350704279" duration="4550000" />
+      <workItem from="1590399561450" duration="4431000" />
+      <workItem from="1590417770402" duration="12940000" />
+      <workItem from="1590577928857" duration="35751000" />
+      <workItem from="1590663997131" duration="5345000" />
+      <workItem from="1590690348719" duration="759000" />
+      <workItem from="1590872662553" duration="1862000" />
+      <workItem from="1590925817657" duration="11561000" />
+      <workItem from="1590949022091" duration="709000" />
+      <workItem from="1590949812224" duration="17155000" />
+      <workItem from="1591003491225" duration="7258000" />
+      <workItem from="1591052193417" duration="7556000" />
+      <workItem from="1591087422126" duration="9269000" />
+      <workItem from="1591097524389" duration="4687000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1591100502935">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
+    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1591100502935">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
+    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1591100502935">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
+    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1591100502935">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
+    <state x="249" y="0" key="SettingsEditor" timestamp="1591097607175">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="249" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1591097607175" />
+    <state x="498" y="305" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1591097603308">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="498" y="305" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1536.824@0.0.1536.824" timestamp="1591097603308" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ru/ifmo/se/lab6/client/command/UpdateCommand.java</url>
+          <line>17</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ru/ifmo/se/lab6/server/command/UpdateCommand.java</url>
+          <line>20</line>
+          <option name="timeStamp" value="32" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ru/ifmo/se/lab6/server/ProductCollection.java</url>
+          <line>75</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ru/ifmo/se/lab6/client/Test.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="43" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="server.localAddress" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>
