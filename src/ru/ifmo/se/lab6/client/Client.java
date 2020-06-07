@@ -132,7 +132,6 @@ public class Client implements Runnable {
                             socket.close();
                             application.execute("exit", false);
                     }
-                    Thread.sleep(1500);
                     obj = receiveObj();
                     serviceManager = (ServiceManager) obj;
                     check = serviceManager.getCode();
@@ -145,8 +144,8 @@ public class Client implements Runnable {
         }
         catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка: сервер недоступен.");
-        //} catch ( e) {
-        //    System.out.print("Ошибка: сервер недоступен.");
+            //} catch ( e) {
+            //    System.out.print("Ошибка: сервер недоступен.");
         }
         finally {
             socket.close();

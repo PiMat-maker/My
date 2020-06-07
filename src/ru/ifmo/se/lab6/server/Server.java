@@ -78,7 +78,7 @@ public class Server implements Runnable{
                 String commandName = new String(bytes, 0, buffer.limit());
                 buffer.clear();
                 if (commandName.contains("exit")){
-                    application.execute("exit");
+                    application.execute("save");
                     channel.disconnect();
                     continue;
                 }
@@ -100,8 +100,6 @@ public class Server implements Runnable{
                         throw new FileNotFoundException();
                     }
 
-                    serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg("1234124");
-                    sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
                     ProductCollection productCollection = new ProductCollection(downloadCollection(channel, file));
                     serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg("Коллекция успешно заполнена.\n");
                     sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
@@ -183,6 +181,8 @@ public class Server implements Runnable{
                                 result = "";
                             }
                         }
+                        serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg(result);
+                        sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
                         serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
                         sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
 
@@ -200,7 +200,7 @@ public class Server implements Runnable{
                 e.printStackTrace();
                 System.out.println("\nОшибка: проблемы с доступом к клиенту. Отключение...");
             } //catch (ClassNotFoundException e) {
-              //  e.printStackTrace();
+            //  e.printStackTrace();
             //}
 
 
