@@ -27,7 +27,7 @@ public class Client implements Runnable {
         try {
             remoteAddress = new InetSocketAddress(InetAddress.getLocalHost(), 3131);
             socket = new DatagramSocket();
-//            socket.setSoTimeout(10000);
+            socket.setSoTimeout(10000);
             socket.connect(remoteAddress);
         } catch (UnknownHostException e) {
             System.out.println("Ошибка: неизвестный хост.");
@@ -66,10 +66,10 @@ public class Client implements Runnable {
                         System.out.print(serviceManager.getMsg());
                     switch (check) {
                         case FILE_ERROR:
-                            String fileName;
-                            System.out.print("Введите имя файла с коллекцией, лежащего на сервере:\n$");
-                            fileName = readNotNullLine(in);//"input.json";
-                            bytes = fileName.getBytes();
+                            //String fileName;
+                            //System.out.print("Введите имя файла с коллекцией, лежащего на сервере:\n$");
+                            //fileName = "Ghbdtn";//"input.json";
+                            //bytes = fileName.getBytes();
                             //try{
                             //    //socket.setSoTimeout(10000);
                             //    for (int i = 0; i<5; i+=1) {
@@ -83,7 +83,11 @@ public class Client implements Runnable {
                             //} catch (InterruptedException e) {
                             //    e.printStackTrace();
                             //}
-                            sendByteArr();
+                            //String[] s = {"Ghbdtn"};
+                            for (int i=0;i<1;++i){
+                                Thread.sleep(i*1000);
+                                sendObj("Ghbdtn");
+                            }
                             break;
 
                         case OKAY:
@@ -95,6 +99,7 @@ public class Client implements Runnable {
                             break;
 
                         case EXIT:
+                            sendObj("exit");
                             application.execute("exit", false);
                             break;
 
@@ -109,6 +114,7 @@ public class Client implements Runnable {
                         case READY:
                             String commandName = "";
                             commandName = readNotNullLine(in);
+
                             if (application.getCommandHelperMap().containsKey(commandName)
                                     && commandName.substring(0, 2).equals("add"))
                                 args = application.execute("add", false);
@@ -126,18 +132,21 @@ public class Client implements Runnable {
                             socket.close();
                             application.execute("exit", false);
                     }
+                    Thread.sleep(1500);
                     obj = receiveObj();
                     serviceManager = (ServiceManager) obj;
                     check = serviceManager.getCode();
                 } catch (ClassCastException e) {
                     System.out.println("Ошибка: получен неизвестный объект");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        catch (SocketTimeoutException e) {
+        catch (IOException | ClassNotFoundException e) {
             System.out.println("Ошибка: сервер недоступен.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.print("Ошибка: сервер недоступен.");
+        //} catch ( e) {
+        //    System.out.print("Ошибка: сервер недоступен.");
         }
         finally {
             socket.close();
@@ -158,6 +167,11 @@ public class Client implements Runnable {
             return line;
         }
         catch(NoSuchElementException e){
+            try {
+                sendObj("exit");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
             System.out.println("Клиент закончил работу");
             return "Nope";
         }

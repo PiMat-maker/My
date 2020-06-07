@@ -16,6 +16,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectId" id="1afej17UxdzVEfxlmJawkDzKyVA" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -159,6 +162,8 @@
       <workItem from="1591052193417" duration="7556000" />
       <workItem from="1591087422126" duration="9269000" />
       <workItem from="1591097524389" duration="4687000" />
+      <workItem from="1591448149131" duration="17761000" />
+      <workItem from="1591525857135" duration="7107000" />
     </task>
     <servers />
   </component>
@@ -166,30 +171,58 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom" timestamp="1591100502935">
+    <state width="1493" height="251" key="GridCell.Tab.0.bottom" timestamp="1591533058318">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
-    <state width="1493" height="210" key="GridCell.Tab.0.center" timestamp="1591100502935">
+    <state width="1493" height="251" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1591533058318" />
+    <state width="1493" height="251" key="GridCell.Tab.0.center" timestamp="1591533058318">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
-    <state width="1493" height="210" key="GridCell.Tab.0.left" timestamp="1591100502935">
+    <state width="1493" height="251" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1591533058318" />
+    <state width="1493" height="251" key="GridCell.Tab.0.left" timestamp="1591533058318">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
-    <state width="1493" height="210" key="GridCell.Tab.0.right" timestamp="1591100502935">
+    <state width="1493" height="251" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1591533058318" />
+    <state width="1493" height="251" key="GridCell.Tab.0.right" timestamp="1591533058318">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
-    <state width="1493" height="210" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1591100502935" />
+    <state width="1493" height="251" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1591533058318" />
+    <state width="1493" height="261" key="GridCell.Tab.1.bottom" timestamp="1591482525644">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.bottom/0.0.1536.824@0.0.1536.824" timestamp="1591482525644" />
+    <state width="1493" height="261" key="GridCell.Tab.1.center" timestamp="1591482525644">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.center/0.0.1536.824@0.0.1536.824" timestamp="1591482525644" />
+    <state width="1493" height="261" key="GridCell.Tab.1.left" timestamp="1591482525644">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.left/0.0.1536.824@0.0.1536.824" timestamp="1591482525644" />
+    <state width="1493" height="261" key="GridCell.Tab.1.right" timestamp="1591482525644">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state width="1493" height="261" key="GridCell.Tab.1.right/0.0.1536.824@0.0.1536.824" timestamp="1591482525644" />
     <state x="249" y="0" key="SettingsEditor" timestamp="1591097607175">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="249" y="0" key="SettingsEditor/0.0.1536.824@0.0.1536.824" timestamp="1591097607175" />
+    <state x="465" y="236" key="com.intellij.ide.util.TipDialog" timestamp="1591525861460">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1591525861460" />
     <state x="498" y="305" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1591097603308">
       <screen x="0" y="0" width="1536" height="824" />
     </state>
     <state x="498" y="305" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1536.824@0.0.1536.824" timestamp="1591097603308" />
+    <state x="330" y="148" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1591474463995">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="330" y="148" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1536.824@0.0.1536.824" timestamp="1591474463995" />
+    <state x="425" y="187" key="run.anything.popup" timestamp="1591448316945">
+      <screen x="0" y="0" width="1536" height="824" />
+    </state>
+    <state x="425" y="187" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1591448316945" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -208,11 +241,6 @@
           <url>file://$PROJECT_DIR$/src/ru/ifmo/se/lab6/server/ProductCollection.java</url>
           <line>75</line>
           <option name="timeStamp" value="33" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ru/ifmo/se/lab6/client/Test.java</url>
-          <line>40</line>
-          <option name="timeStamp" value="43" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
