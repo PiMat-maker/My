@@ -78,7 +78,7 @@ public class Server implements Runnable{
                 String commandName = new String(bytes, 0, buffer.limit());
                 buffer.clear();
                 if (commandName.contains("exit")){
-                    application.execute("save");
+                    application.executeServiceCmd("save");
                     channel.disconnect();
                     continue;
                 }
@@ -310,11 +310,15 @@ public class Server implements Runnable{
         try {
             while (fileScanner.hasNextLine()) {
                 String k = fileScanner.nextLine();
-                String[] line = new Gson().fromJson(k, String.class).split(", ");
-                products.add(new Product(line));
+                String[] lines = new Gson().fromJson(k, String.class).split("\n\n");
+                for (int i=0; i < lines.length - 1; ++i) {
+                    if (lines[i].startsWith(",")){lines[i] = lines[i].replaceFirst(",", "");}
+                    products.add(new Product(lines[i].split(",")));
+                }
             }
             sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
         } catch (Throwable e) {
+            e.printStackTrace();
             serviceManager.get(ServiceCommand.DATA_ERROR.ordinal()).clearMsg();
             serviceManager.get(ServiceCommand.DATA_ERROR.ordinal())
                     .setMsg("Ошибка: некорректные данные.\nСоздать пустую коллекцию? (Да/Нет)\n$");

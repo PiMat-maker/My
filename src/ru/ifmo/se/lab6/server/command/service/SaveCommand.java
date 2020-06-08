@@ -1,6 +1,8 @@
 package ru.ifmo.se.lab6.server.command.service;
 
+import com.google.gson.Gson;
 import ru.ifmo.se.lab6.server.ProductCollection;
+import ru.ifmo.se.lab6.server.Server;
 import ru.ifmo.se.lab6.server.command.ServerCommand;
 
 import java.io.File;
@@ -22,7 +24,13 @@ public class SaveCommand implements ServerCommand {
         try {
             if (file.canWrite()) {
                 FileWriter out = new FileWriter(file);
-                out.write(productCollection.getProducts().toString());
+                String line = productCollection.getProducts().toString();
+                System.out.println(line);
+                line = new Gson().toJson(line);
+                System.out.println(line);
+                out.write(line);
+                out.flush();
+                out.close();
             }
             else {
                 String absolutePath = file.getAbsolutePath();
@@ -36,7 +44,10 @@ public class SaveCommand implements ServerCommand {
                 }
                 Path path = Paths.get(absolutePath);
                 FileWriter out = new FileWriter(path.toFile());
-                out.write(productCollection.getProducts().toString());
+                String line = new Gson().toJson(productCollection.getProducts().toString());
+                out.write(line);
+                out.flush();
+                out.close();
             }
         } catch(IOException e) {
             System.out.println("Ошибка: не удалось сохранить коллекцию в файл.");

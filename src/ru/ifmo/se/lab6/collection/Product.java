@@ -48,15 +48,32 @@ public class Product implements Comparable<Product>, Serializable {
 
     public Product(String[] s) {
         Instant instant = Instant.now();
-        Coordinates coordinates = new Coordinates(Long.parseLong(s[1]), Float.parseFloat(s[2]));
-        setId(Math.abs(UUID.randomUUID().hashCode()));
-        setName(s[0]);
+        Coordinates coordinates;
+        Person owner;
+        if (s[0].contains("id = ")) {
+            setId(Integer.parseInt(s[0].split(" = ")[1]));
+            setName(s[1].split(" = ")[1]);
+            coordinates = new Coordinates(Long.parseLong(s[2].split(" = ")[2]),
+                    Float.parseFloat(s[3].split(" = ")[1].replaceAll("]", "")));
+            setCreationDate(ZonedDateTime.parse(s[4].split(" = ")[1]));
+            setPrice(Float.parseFloat(s[5].split(" = ")[1]));
+            setManufactureCost(Long.parseLong(s[6].split(" = ")[1]));
+            setUnitOfMeasure(UnitOfMeasure.valueOf(s[7].split(" = ")[1]));
+            int finalElement = s[12].split(" = ")[1].indexOf("]");
+            owner = new Person (s[8].split(" = ")[2], Float.parseFloat(s[9].split(" = ")[1]),
+                    Color.valueOf(s[10].split(" = ")[1]), Color.valueOf(s[11].split(" = ")[1]),
+                    Country.valueOf(s[12].split(" = ")[1].substring(0, finalElement)));
+        } else {
+            coordinates = new Coordinates(Long.parseLong(s[1]), Float.parseFloat(s[2]));
+            setId(Math.abs(UUID.randomUUID().hashCode()));
+            setName(s[0]);
+            setCreationDate(instant);
+            setPrice(Float.parseFloat(s[3]));
+            setManufactureCost(Long.parseLong(s[4]));
+            setUnitOfMeasure(UnitOfMeasure.valueOf(s[5]));
+            owner = new Person(s[6], Float.parseFloat(s[7]), Color.valueOf(s[8]), Color.valueOf(s[9]), Country.valueOf(s[10]));
+        }
         setCoordinates(coordinates);
-        setCreationDate(instant);
-        setPrice(Float.parseFloat(s[3]));
-        setManufactureCost(Long.parseLong(s[4]));
-        setUnitOfMeasure(UnitOfMeasure.valueOf(s[5]));
-        Person owner = new Person(s[6], Float.parseFloat(s[7]), Color.valueOf(s[8]), Color.valueOf(s[9]), Country.valueOf(s[10]));
         setOwner(owner);
     }
 
@@ -83,6 +100,10 @@ public class Product implements Comparable<Product>, Serializable {
 
     public Coordinates getCoordinates() {
         return coordinates;
+    }
+
+    public void setCreationDate(java.time.ZonedDateTime date){
+        this.creationDate = date;
     }
 
     public void setCreationDate(Instant instant) {
