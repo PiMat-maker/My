@@ -60,8 +60,11 @@ public class Client implements Runnable {
             ServiceCommand check = serviceManager.getCode();
             Object obj;
             Scanner in = new Scanner(System.in);
+
             while (true) {
                 try {
+                    String[] interrupt = new String[10000];
+                    byte[] interruptBytes = new byte[capacity];
                     if (!check.equals(ServiceCommand.INPUT))
                         System.out.print(serviceManager.getMsg());
                     switch (check) {
@@ -84,7 +87,8 @@ public class Client implements Runnable {
                             //    e.printStackTrace();
                             //}
                             //String[] s = {"Ghbdtn"};
-                            for (int i=0;i<1;++i){
+                            System.out.println("Пожалуйста, подождите. Идет подключение к серверу");
+                            for (int i=0;i<5;++i){
                                 Thread.sleep(i*1000);
                                 sendObj("Ghbdtn");
                             }
@@ -123,6 +127,8 @@ public class Client implements Runnable {
                             else
                                 args = application.execute(commandName, false);
                             bytes = commandName.getBytes();
+                            interruptBytes = bytes;
+                            interrupt = args;
                             sendByteArr();
                             sendObj(args);
                             break;
@@ -133,6 +139,19 @@ public class Client implements Runnable {
                             application.execute("exit", false);
                     }
                     obj = receiveObj();
+                    String s = String.valueOf(obj);
+                    if (s.contains("Stopped")){
+                        receiveObj();
+                        serviceManager = (ServiceManager) obj;
+                        check = serviceManager.getCode();
+                        bytes = interruptBytes;
+                        for (int i=0;i<5;++i){
+                            Thread.sleep(i*1000);
+                            sendByteArr();
+                            sendObj(interrupt);
+                        }
+                        receiveObj();
+                    }
                     serviceManager = (ServiceManager) obj;
                     check = serviceManager.getCode();
                 } catch (ClassCastException e) {

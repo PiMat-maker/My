@@ -25,9 +25,8 @@ public class SaveCommand implements ServerCommand {
             if (file.canWrite()) {
                 FileWriter out = new FileWriter(file);
                 String line = productCollection.getProducts().toString();
-                System.out.println(line);
                 line = new Gson().toJson(line);
-                System.out.println(line);
+                //System.out.println(line);
                 out.write(line);
                 out.flush();
                 out.close();

@@ -69,22 +69,44 @@ public class Server implements Runnable{
         application.registerServiceCmd("exit", new ExitCommand());
     }
 
+    class ProcessorHook extends Thread{
+
+        @Override
+        public void run() {
+            try {
+                sendObj("Stopped");
+                serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg("Сервер был отключен.\n");
+                sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void run() {
+        boolean clientStatus = false;
+        boolean serverStatus = false;
+        Runtime.getRuntime().addShutdownHook(new ProcessorHook());
         while (true) {
             try {
                 remoteAddress = receiveByteArr();
                 buffer.get(bytes, 0, buffer.limit());
                 String commandName = new String(bytes, 0, buffer.limit());
                 buffer.clear();
+
                 if (commandName.contains("exit")){
+                    clientStatus = false;
                     application.executeServiceCmd("save");
                     channel.disconnect();
                     continue;
                 }
-                if (commandName.contains("Ghbdtn")) {
+                if (commandName.contains("Ghbdtn") && clientStatus == true){continue;}
+                if (serverStatus == false) {
                     if (channel.isConnected())
                         channel.disconnect();
+                    serverStatus = true;
+                    clientStatus = true;
                     String file = "input.json";
                     Path filePath;
                     try {
@@ -125,8 +147,10 @@ public class Server implements Runnable{
 
                     serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
                     sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
+                    if (commandName.contains("Ghbdtn")){continue;}
                 }
-                else{
+                if (serverStatus == true){
+                    if (clientStatus == false){continue;}
                     try {
                         channel.configureBlocking(false);
                         //serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
@@ -238,6 +262,7 @@ public class Server implements Runnable{
         objOut.writeObject(obj);
         channel.send(ByteBuffer.wrap(byteArrOut.toByteArray()), remoteAddress);
         objOut.close();
+        byteArrOut.close();
     }
 
     private HashSet<Product> downloadCollection(DatagramChannel channel, String file) throws IOException {
