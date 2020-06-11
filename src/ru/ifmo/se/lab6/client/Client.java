@@ -46,8 +46,22 @@ public class Client implements Runnable {
         }
     }
 
+    class ProcessorHook extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                sendObj("exit");
+                System.out.println("Клиент закончил работу");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void run() {
+        Runtime.getRuntime().addShutdownHook(new ProcessorHook());
         ClientInOut inOut = new ClientInOut(System.out, System.in);
         Application application = new Application();
         application.register("add", new AddCommand(inOut));

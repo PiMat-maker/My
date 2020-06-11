@@ -8,7 +8,6 @@ import ru.ifmo.se.lab6.server.command.*;
 import ru.ifmo.se.lab6.server.command.service.ExitCommand;
 import ru.ifmo.se.lab6.server.command.service.SaveCommand;
 import java.util.logging.*;
-import org.apache.logging.*;
 
 import java.io.*;
 import java.net.*;
@@ -19,8 +18,6 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
-import static com.sun.tools.doclint.Entity.or;
 
 public class Server implements Runnable{
 
