@@ -56,6 +56,7 @@ public class Client implements Runnable {
         application.register("remove_by_id", new RemoveByIdCommand(inOut));
         application.register("update", new UpdateCommand(inOut));
         serviceManager = new ServiceManager(ServiceCommand.FILE_ERROR);
+        int howMuchIsOut = 0;
         try {
             ServiceCommand check = serviceManager.getCode();
             Object obj;
@@ -65,8 +66,11 @@ public class Client implements Runnable {
                 try {
                     String[] interrupt = new String[10000];
                     byte[] interruptBytes = new byte[capacity];
-                    if (!check.equals(ServiceCommand.INPUT))
+                    //System.out.println("HowMuch = " + howMuchIsOut);
+                    if (!check.equals(ServiceCommand.INPUT) && howMuchIsOut > 0) {
                         System.out.print(serviceManager.getMsg());
+                        howMuchIsOut--;
+                    }
                     switch (check) {
                         case FILE_ERROR:
                             //String fileName;
@@ -92,9 +96,11 @@ public class Client implements Runnable {
                                 Thread.sleep(i*1000);
                                 sendObj("Ghbdtn");
                             }
+                            howMuchIsOut = 3 ;
                             break;
 
                         case OKAY:
+                            howMuchIsOut = 1;
                             break;
 
                         case DATA_ERROR:
@@ -118,6 +124,7 @@ public class Client implements Runnable {
                         case READY:
                             String commandName = "";
                             commandName = readNotNullLine(in);
+                            howMuchIsOut = 3;
 
                             if (application.getCommandHelperMap().containsKey(commandName)
                                     && commandName.substring(0, 2).equals("add"))
@@ -127,7 +134,7 @@ public class Client implements Runnable {
                             else
                                 args = application.execute(commandName, false);
                             bytes = commandName.getBytes();
-                            interruptBytes = bytes;
+                            interruptBytes = commandName.getBytes();
                             interrupt = args;
                             sendByteArr();
                             sendObj(args);
@@ -141,27 +148,32 @@ public class Client implements Runnable {
                     obj = receiveObj();
                     String s = String.valueOf(obj);
                     if (s.contains("Stopped")){
-                        receiveObj();
-                        serviceManager = (ServiceManager) obj;
-                        check = serviceManager.getCode();
-                        bytes = interruptBytes;
+                        System.out.println("Сервер был отключен");
+                        Thread.sleep(500);
+                        System.out.println("Пожалуйста, подождите. Идет переподключение к серверу");
                         for (int i=0;i<5;++i){
                             Thread.sleep(i*1000);
-                            sendByteArr();
-                            sendObj(interrupt);
+                            sendObj("Ghbdtn");
                         }
                         receiveObj();
+                        receiveObj();
+                        bytes = interruptBytes;
+                        sendByteArr();
+                        sendObj(interrupt);
+                        obj = receiveObj();
                     }
                     serviceManager = (ServiceManager) obj;
                     check = serviceManager.getCode();
                 } catch (ClassCastException e) {
                     System.out.println("Ошибка: получен неизвестный объект");
+                    //e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
         catch (IOException | ClassNotFoundException e) {
+            //e.printStackTrace();
             System.out.println("Ошибка: сервер недоступен.");
             //} catch ( e) {
             //    System.out.print("Ошибка: сервер недоступен.");
