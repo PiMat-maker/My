@@ -7,12 +7,13 @@ import ru.ifmo.se.lab6.collection.Product;
 import ru.ifmo.se.lab6.server.command.*;
 import ru.ifmo.se.lab6.server.command.service.ExitCommand;
 import ru.ifmo.se.lab6.server.command.service.SaveCommand;
+
+import java.nio.channels.*;
 import java.util.logging.*;
 
 import java.io.*;
 import java.net.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -24,12 +25,14 @@ public class Server implements Runnable{
     private static int capacity = 65536;
     private byte[] bytes = new byte[capacity];
     private SocketAddress localAddress;
-    private SocketAddress remoteAddress;
-    private DatagramChannel channel;
+    private int remoteAddress;
+    private SocketChannel channel;
+    private ServerSocketChannel ssc;
     private final List<ServiceManager> serviceManager;
     private ByteBuffer buffer = ByteBuffer.allocate(capacity);
     private final Application application = new Application();
-    Logger logger = Logger.getLogger(Server.class.getName());
+    private Logger logger = Logger.getLogger(Server.class.getName());
+    private Selector selector = null;
 
     public Server() {
         this(3131);
@@ -61,9 +64,12 @@ public class Server implements Runnable{
         serviceManager.add(new ServiceManager(ServiceCommand.DISCONNECT, "Ошибка: время ожидания сервером истекло.\n"));
 
         try {
-            channel = DatagramChannel.open();
-            channel.bind(localAddress);
-            channel.socket().setSoTimeout(10000);
+            selector = selector.open();
+            ssc = ServerSocketChannel.open();
+            ssc.socket().bind(new InetSocketAddress(port));
+            ssc.configureBlocking(false);
+            SelectionKey s = ssc.register(selector, SelectionKey.OP_ACCEPT);
+            //ssc.socket().setSoTimeout(10000);
         } catch (IOException e) {
             System.out.println("Ошибка: не удалось открыть канал.");
             logger.severe("Не удалось открыть канал");
@@ -94,154 +100,177 @@ public class Server implements Runnable{
 
         while (true) {
             try {
-                remoteAddress = receiveByteArr();
-                buffer.get(bytes, 0, buffer.limit());
-                String commandName = new String(bytes, 0, buffer.limit());
-                buffer.clear();
-                if (commandName.contains("exit")){
-                    logger.info("Клиент отключился");
-                    clientStatus = false;
-                    application.executeServiceCmd("save");
-                    channel.disconnect();
-                    continue;
-                }
-                if (commandName.contains("Ghbdtn") && clientStatus == true){continue;}
-                if (commandName.contains("Ghbdtn") && (serverStatus == false || clientStatus == false)) {
-                    if (channel.isConnected())
-                        channel.disconnect();
-                    serverStatus = true;
-                    clientStatus = true;
-                    String file = "input.json";
-                    Path filePath;
-                    try {
-                        filePath = Paths.get(file);
-                    } catch (InvalidPathException e) {
-                        serviceManager.get(ServiceCommand.FILE_ERROR.ordinal())
-                                .setMsg("Ошибка: некорректное имя файла. ");
-                        throw new FileNotFoundException();
-                    }
-                    if (Files.exists(filePath) && !Files.isReadable(filePath)) {
-                        serviceManager.get(ServiceCommand.FILE_ERROR.ordinal())
-                                .setMsg("Ошибка: отсутствие необходимых прав доступа к файлу. ");
-                        throw new FileNotFoundException();
-                    }
+                //System.out.println(selector.selectedKeys());
+                int select = selector.select();
+                //System.out.println(select);
+                if (select == 0){continue;}
+                System.out.println(selector.isOpen());
+                Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
+                while (selectedKeys.hasNext()) {
+                    SelectionKey k = selectedKeys.next();
 
-                    ProductCollection productCollection = new ProductCollection(downloadCollection(channel, file));
-                    if (commandName.contains("Ghbdtn")) {
-                        serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg("Коллекция успешно заполнена.\n");
-                        sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
-                        logger.fine("Успешно загружена коллекция");
-                    }
+                    if (k.channel() == ssc) {
 
-
-                    application.register("add", new AddCommand(productCollection));
-                    application.register("add_if_max", new AddIfMaxCommand(productCollection));
-                    application.register("add_if_min", new AddIfMinCommand(productCollection));
-                    application.register("clear", new ClearCommand(productCollection));
-                    application.register("help", new HelpCommand(application));
-                    application.register("info", new InfoCommand(productCollection));
-                    application.register("max_by_owner", new MaxByOwnerCommand(productCollection));
-                    application.register("print_unit_of_measure", new PrintUnitOfMeasureDescCommand(productCollection));
-                    application.register("remove_all_by_unit_of_measure", new RemoveAllByUnitOfMeasureCommand(productCollection));
-                    application.register("remove_by_id", new RemoveByIdCommand(productCollection));
-                    application.register("remove_greater", new RemoveGreaterCommand(productCollection));
-                    application.register("execute_script", new ScriptCommand());
-                    application.register("show", new ShowCommand(productCollection));
-                    application.register("update", new UpdateCommand(productCollection));
-
-                    application.registerServiceCmd("save", new SaveCommand(productCollection, filePath.toFile()));
-
-
-
-                    if (commandName.contains("Ghbdtn")){
-                        serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
-                        sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
-                    }
-                    //if (commandName.contains("Ghbdtn")){continue;}
-                    continue;
-                }
-                if (serverStatus == true){
-                    if (clientStatus == false){continue;}
-                    try {
-                        //System.out.println(1);
-                        logger.info("Обработка команды");
+                        channel = ssc.accept();
                         channel.configureBlocking(false);
-                        //serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
-                        //sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
-                        //String commandName;
-                        String[] args;
-                        int i = 0;
-                        //while (++i < 5 * Math.pow(10, 5) && (buffer.limit() == 0 || buffer.limit() == buffer.capacity())) {
-                        //    if (System.in.available() != 0) {
-                        //        int len = System.in.read(bytes, 0, System.in.available());
-                        //        String serverCommand = new String(bytes, 0, len - 1);
-                        //        if (serverCommand.equals("exit")) {
-                        //            channel.disconnect();
-                        //            channel.close();
-                        //        }
-                        //        System.out.println(application.executeServiceCmd(serverCommand));
-                        //        System.out.print("Введите команду:\n$");
-                        //    }
-                        //    //receiveByteArr();
-                        //}
-                        if (i == 5 * Math.pow(10, 5)) {
-                            throw new PortUnreachableException();
+                        channel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                    } else {
+
+
+                        remoteAddress = receiveByteArr();
+                        buffer.get(bytes, 0, buffer.limit());
+                        String commandName = new String(bytes, 0, buffer.limit());
+                        buffer.clear();
+                        if (commandName.contains("exit")) {
+                            logger.info("Клиент отключился");
+                            clientStatus = false;
+                            application.executeServiceCmd("save");
+                            //channel.disconnect();
+                            continue;
                         }
-                        channel.configureBlocking(true);
-                        //buffer.get(bytes, 0, buffer.limit());
-                        //commandName = new String(bytes, 0, buffer.limit());
-                        //buffer.clear();
-                        //System.out.println(2);
-                        args = (String[]) receiveObj();
-                        //System.out.println(3);
-                        //System.out.println(commandName);
-                        String result = "";
-                        boolean isExec = true;
-                        while (isExec) {
-                            if (args != null)
-                                result = application.execute(commandName, args);
-                            else
-                                result = application.execute(commandName);
-                            if (result.contains(",")) {
-                                try {
-                                    String[] arr = result.split(",");
-                                    ServiceCommand send = ServiceCommand
-                                            .valueOf(arr[0]);
-                                    String cmdName = arr[1];
-                                    serviceManager.get(send.ordinal()).setMsg(cmdName);
-                                    sendObj(serviceManager.get(send.ordinal()));
-                                    args = (String[]) receiveObj();
-                                } catch (IllegalArgumentException e) {
-                                    isExec = false;
+                        if (commandName.contains("Ghbdtn") && clientStatus == true) {
+                            continue;
+                        }
+                        if (commandName.contains("Ghbdtn") && (serverStatus == false || clientStatus == false)) {
+                            //if (channel.isConnected())
+                            //    channel.disconnect();
+                            serverStatus = true;
+                            clientStatus = true;
+                            String file = "input.json";
+                            Path filePath;
+                            try {
+                                filePath = Paths.get(file);
+                            } catch (InvalidPathException e) {
+                                serviceManager.get(ServiceCommand.FILE_ERROR.ordinal())
+                                        .setMsg("Ошибка: некорректное имя файла. ");
+                                throw new FileNotFoundException();
+                            }
+                            if (Files.exists(filePath) && !Files.isReadable(filePath)) {
+                                serviceManager.get(ServiceCommand.FILE_ERROR.ordinal())
+                                        .setMsg("Ошибка: отсутствие необходимых прав доступа к файлу. ");
+                                throw new FileNotFoundException();
+                            }
+
+                            ProductCollection productCollection = new ProductCollection(downloadCollection(channel, file));
+                            if (commandName.contains("Ghbdtn")) {
+                                serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg("Коллекция успешно заполнена.\n");
+                                sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
+                                logger.fine("Успешно загружена коллекция");
+                            }
+
+
+                            application.register("add", new AddCommand(productCollection));
+                            application.register("add_if_max", new AddIfMaxCommand(productCollection));
+                            application.register("add_if_min", new AddIfMinCommand(productCollection));
+                            application.register("clear", new ClearCommand(productCollection));
+                            application.register("help", new HelpCommand(application));
+                            application.register("info", new InfoCommand(productCollection));
+                            application.register("max_by_owner", new MaxByOwnerCommand(productCollection));
+                            application.register("print_unit_of_measure", new PrintUnitOfMeasureDescCommand(productCollection));
+                            application.register("remove_all_by_unit_of_measure", new RemoveAllByUnitOfMeasureCommand(productCollection));
+                            application.register("remove_by_id", new RemoveByIdCommand(productCollection));
+                            application.register("remove_greater", new RemoveGreaterCommand(productCollection));
+                            application.register("execute_script", new ScriptCommand());
+                            application.register("show", new ShowCommand(productCollection));
+                            application.register("update", new UpdateCommand(productCollection));
+
+                            application.registerServiceCmd("save", new SaveCommand(productCollection, filePath.toFile()));
+
+
+                            if (commandName.contains("Ghbdtn")) {
+                                serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
+                                sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
+                            }
+                            //if (commandName.contains("Ghbdtn")){continue;}
+                            continue;
+                        }
+                        if (serverStatus == true) {
+                            if (clientStatus == false) {
+                                continue;
+                            }
+                            try {
+                                //System.out.println(1);
+                                logger.info("Обработка команды");
+                                channel.configureBlocking(false);
+                                //serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
+                                //sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
+                                //String commandName;
+                                String[] args;
+                                int i = 0;
+                                //while (++i < 5 * Math.pow(10, 5) && (buffer.limit() == 0 || buffer.limit() == buffer.capacity())) {
+                                //    if (System.in.available() != 0) {
+                                //        int len = System.in.read(bytes, 0, System.in.available());
+                                //        String serverCommand = new String(bytes, 0, len - 1);
+                                //        if (serverCommand.equals("exit")) {
+                                //            channel.disconnect();
+                                //            channel.close();
+                                //        }
+                                //        System.out.println(application.executeServiceCmd(serverCommand));
+                                //        System.out.print("Введите команду:\n$");
+                                //    }
+                                //    //receiveByteArr();
+                                //}
+                                if (i == 5 * Math.pow(10, 5)) {
+                                    throw new PortUnreachableException();
                                 }
-                            } else
-                                isExec = false;
-                            if (result.equals("ERROR_COMMAND")) {
-                                sendObj(serviceManager.get(ServiceCommand.valueOf(result).ordinal()));
-                                result = "";
-                                logger.log(Level.WARNING, "Неправильная команда");
+                                channel.configureBlocking(true);
+                                //buffer.get(bytes, 0, buffer.limit());
+                                //commandName = new String(bytes, 0, buffer.limit());
+                                //buffer.clear();
+                                //System.out.println(2);
+                                args = (String[]) receiveObj();
+                                //System.out.println(3);
+                                //System.out.println(commandName);
+                                String result = "";
+                                boolean isExec = true;
+                                while (isExec) {
+                                    if (args != null)
+                                        result = application.execute(commandName, args);
+                                    else
+                                        result = application.execute(commandName);
+                                    if (result.contains(",")) {
+                                        try {
+                                            String[] arr = result.split(",");
+                                            ServiceCommand send = ServiceCommand
+                                                    .valueOf(arr[0]);
+                                            String cmdName = arr[1];
+                                            serviceManager.get(send.ordinal()).setMsg(cmdName);
+                                            sendObj(serviceManager.get(send.ordinal()));
+                                            args = (String[]) receiveObj();
+                                        } catch (IllegalArgumentException e) {
+                                            isExec = false;
+                                        }
+                                    } else
+                                        isExec = false;
+                                    if (result.equals("ERROR_COMMAND")) {
+                                        sendObj(serviceManager.get(ServiceCommand.valueOf(result).ordinal()));
+                                        result = "";
+                                        logger.log(Level.WARNING, "Неправильная команда");
+                                    }
+                                }
+                                //System.out.println(result);
+                                logger.info("Отправка результата");
+                                serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg(result);
+                                sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
+                                serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
+                                sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
+
+                            } catch (PortUnreachableException e) {
+                                sendObj(serviceManager.get(ServiceCommand.DISCONNECT.ordinal()));
+                                channel.configureBlocking(true);
+                                //channel.disconnect();
+                                logger.severe("Недоступный порт");
+                                throw new IOException(e);
+                            } catch (IOException | ClassNotFoundException e) {
+                                //e.printStackTrace();
+                                serviceManager.get(ServiceCommand.ERROR.ordinal()).setMsg("Ошибка: проблемы на сервере.");
+                                sendObj(serviceManager.get(ServiceCommand.ERROR.ordinal()));
+                                logger.severe("Проблема на сервере");
                             }
                         }
-                        //System.out.println(result);
-                        logger.info("Отправка результата");
-                        serviceManager.get(ServiceCommand.OKAY.ordinal()).setMsg(result);
-                        sendObj(serviceManager.get(ServiceCommand.OKAY.ordinal()));
-                        serviceManager.get(ServiceCommand.READY.ordinal()).setMsg("Введите команду ('help' для вывода справки):\n$");
-                        sendObj(serviceManager.get(ServiceCommand.READY.ordinal()));
-
-                    } catch (PortUnreachableException e) {
-                        sendObj(serviceManager.get(ServiceCommand.DISCONNECT.ordinal()));
-                        channel.configureBlocking(true);
-                        channel.disconnect();
-                        logger.severe("Недоступный порт");
-                        throw new IOException(e);
-                    } catch (IOException | ClassNotFoundException e) {
-                        //e.printStackTrace();
-                        serviceManager.get(ServiceCommand.ERROR.ordinal()).setMsg("Ошибка: проблемы на сервере.");
-                        sendObj(serviceManager.get(ServiceCommand.ERROR.ordinal()));
-                        logger.severe("Проблема на сервере");
                     }
                 }
+                selectedKeys.remove();
             } catch (IOException e) {
                 System.out.println("\nОшибка: проблемы с доступом к клиенту. Отключение...");
                 logger.severe("Нет доступа к клиенту");
@@ -250,21 +279,20 @@ public class Server implements Runnable{
             //  e.printStackTrace();
             //}
 
-
             System.out.println("yeah");
             logger.fine("Успешное выполнение команды");
         }
     }
 
-    private SocketAddress receiveByteArr() throws IOException {
+    private int receiveByteArr() throws IOException {
         buffer.clear();
-        SocketAddress remoteAddr = channel.receive(buffer);
+        int remoteAddr = channel.read(buffer);
         buffer.flip();
         return remoteAddr;
     }
 
     private void sendByteArr() throws IOException {
-        channel.send(buffer, remoteAddress);
+        channel.write(buffer);
         buffer.clear();
     }
 
@@ -286,11 +314,11 @@ public class Server implements Runnable{
         ByteArrayOutputStream byteArrOut = new ByteArrayOutputStream();
         ObjectOutputStream objOut = new ObjectOutputStream(byteArrOut);
         objOut.writeObject(obj);
-        channel.send(ByteBuffer.wrap(byteArrOut.toByteArray()), remoteAddress);
+        channel.write(ByteBuffer.wrap(byteArrOut.toByteArray()));
         objOut.close();
     }
 
-    private HashSet<Product> downloadCollection(DatagramChannel channel, String file) throws IOException {
+    private HashSet<Product> downloadCollection(SocketChannel channel, String file) throws IOException {
         //System.out.println("Сервер запущен");
         //boolean running = true;
         Scanner fileScanner;
@@ -315,7 +343,7 @@ public class Server implements Runnable{
         //    }
         //    remoteAddress = receiveByteArr();
         //}
-        channel.socket().connect(remoteAddress);
+        //channel.socket().connect(remoteAddress);
         logger.info("Сформировано новое подключение");
         //sendObj("Receive");
         buffer.clear();
@@ -386,7 +414,7 @@ public class Server implements Runnable{
                 products = new HashSet<>();
             } else {
                 sendObj(serviceManager.get(ServiceCommand.EXIT.ordinal()));
-                channel.disconnect();
+                //channel.disconnect();
                 return products;
             }
         }
