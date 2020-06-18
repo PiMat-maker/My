@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class Client implements Runnable {
 
-    private static int capacity = 65536;
+    private static int capacity = 8192;
     private byte[] bytes = new byte[capacity];
     private SocketAddress remoteAddress;
     private DatagramSocket socket;
@@ -27,7 +27,7 @@ public class Client implements Runnable {
         try {
             remoteAddress = new InetSocketAddress(InetAddress.getLocalHost(), 3131);
             socket = new DatagramSocket();
-//            socket.setSoTimeout(10000);
+            //socket.setSoTimeout(10000);
             socket.connect(remoteAddress);
         } catch (UnknownHostException e) {
             System.out.println("Ошибка: неизвестный хост.");
@@ -40,7 +40,6 @@ public class Client implements Runnable {
         try {
             remoteAddress = new InetSocketAddress(inetAddress, port);
             socket = new DatagramSocket();
-            socket.setSoTimeout(10000);
         } catch (SocketException e) {
             System.out.println("Ошибка: не удалось создать сокет.");
         }
@@ -55,21 +54,30 @@ public class Client implements Runnable {
         application.register("remove_all_by_unit_of_measure", new RemoveAllByUnitOfMeasure(inOut));
         application.register("remove_by_id", new RemoveByIdCommand(inOut));
         application.register("update", new UpdateCommand(inOut));
-        serviceManager = new ServiceManager(ServiceCommand.FILE_ERROR);
+        serviceManager = new ServiceManager(ServiceCommand.READY);
+        //int howMuchIsOut = 0;
         try {
             ServiceCommand check = serviceManager.getCode();
             Object obj;
             Scanner in = new Scanner(System.in);
+            int serverUnavailable = 0;
+            String commandName = "";
+            String[] interrupt = new String[100];
+            System.out.println("Введите команду (для справки введите help)\n$");
+            socket.setSoTimeout(4000);
+
             while (true) {
                 try {
-                    if (!check.equals(ServiceCommand.INPUT))
+                    //System.out.println("HowMuch = " + howMuchIsOut);
+                    if (!check.equals(ServiceCommand.INPUT) && serverUnavailable == 0) {
                         System.out.print(serviceManager.getMsg());
+                    }
                     switch (check) {
                         case FILE_ERROR:
-                            String fileName;
-                            System.out.print("Введите имя файла с коллекцией, лежащего на сервере:\n$");
-                            fileName = readNotNullLine(in);//"input.json";
-                            bytes = fileName.getBytes();
+                            //String fileName;
+                            //System.out.print("Введите имя файла с коллекцией, лежащего на сервере:\n$");
+                            //fileName = "Ghbdtn";//"input.json";
+                            //bytes = fileName.getBytes();
                             //try{
                             //    //socket.setSoTimeout(10000);
                             //    for (int i = 0; i<5; i+=1) {
@@ -83,10 +91,17 @@ public class Client implements Runnable {
                             //} catch (InterruptedException e) {
                             //    e.printStackTrace();
                             //}
-                            sendByteArr();
+                            //String[] s = {"Ghbdtn"};
+                            System.out.println("Пожалуйста, подождите. Идет подключение к серверу");
+                            for (int i=0;i<5;++i){
+                                Thread.sleep(i*1000);
+                                sendObj("Ghbdtn");
+                            }
+                            //howMuchIsOut = 3 ;
                             break;
 
                         case OKAY:
+                            //howMuchIsOut = 1;
                             break;
 
                         case DATA_ERROR:
@@ -95,6 +110,7 @@ public class Client implements Runnable {
                             break;
 
                         case EXIT:
+                            sendObj("exit");
                             application.execute("exit", false);
                             break;
 
@@ -107,18 +123,28 @@ public class Client implements Runnable {
                             break;
 
                         case READY:
-                            String commandName = "";
-                            commandName = readNotNullLine(in);
-                            if (application.getCommandHelperMap().containsKey(commandName)
-                                    && commandName.substring(0, 2).equals("add"))
-                                args = application.execute("add", false);
-                            else if (commandName.equals("Nope"))
-                                args = application.execute("exit", false);
-                            else
-                                args = application.execute(commandName, false);
-                            bytes = commandName.getBytes();
-                            sendByteArr();
-                            sendObj(args);
+
+                            if (serverUnavailable == 0) {
+                                commandName = "";
+                                commandName = readNotNullLine(in);
+                                //howMuchIsOut = 3;
+                                if (application.getCommandHelperMap().containsKey(commandName)
+                                        && commandName.substring(0, 2).equals("add"))
+                                    args = application.execute("add", false);
+                                else if (commandName.equals("Nope"))
+                                    args = application.execute("exit", false);
+                                else
+                                    args = application.execute(commandName, false);
+                                bytes = commandName.getBytes();
+                                interrupt = args;
+                                sendByteArr();
+                                sendObj(args);
+                            }
+                            else{
+                                bytes = commandName.getBytes();
+                                sendByteArr();
+                                sendObj(interrupt);
+                            }
                             break;
 
                         case DISCONNECT:
@@ -127,17 +153,51 @@ public class Client implements Runnable {
                             application.execute("exit", false);
                     }
                     obj = receiveObj();
+                    serverUnavailable = 0;
+                    String s = String.valueOf(obj);
+                    if (s.contains("Stopped")){
+                        System.out.println("Сервер был отключен");
+                        Thread.sleep(500);
+                        System.out.println("Пожалуйста, подождите. Идет переподключение к серверу");
+                        for (int i=0;i<5;++i){
+                            Thread.sleep(i*1000);
+                            sendObj("Ghbdtn");
+                        }
+                        receiveObj();
+                        receiveObj();
+                        //bytes = interruptBytes;
+                        sendByteArr();
+                        sendObj(interrupt);
+                        obj = receiveObj();
+                    }
                     serviceManager = (ServiceManager) obj;
                     check = serviceManager.getCode();
                 } catch (ClassCastException e) {
                     System.out.println("Ошибка: получен неизвестный объект");
+                    //e.printStackTrace();
+                } catch (IOException | InterruptedException e) {
+
+                    System.out.println("Сервер недоступен");
+                    //e.printStackTrace();
+                    serverUnavailable++;
+                    if (serverUnavailable > 5){
+                        System.out.println("Невозможно подключиться к серверу");
+                        break;
+                    }
+                    try {
+                        Thread.sleep(2000);
+
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }
-        catch (SocketTimeoutException e) {
+        catch (IOException | ClassNotFoundException e) {
+            //e.printStackTrace();
             System.out.println("Ошибка: сервер недоступен.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.print("Ошибка: сервер недоступен.");
+            //} catch ( e) {
+            //    System.out.print("Ошибка: сервер недоступен.");
         }
         finally {
             socket.close();
@@ -158,6 +218,11 @@ public class Client implements Runnable {
             return line;
         }
         catch(NoSuchElementException e){
+            //try {
+            //    sendObj("exit");
+            //} catch (IOException ex) {
+            //    ex.printStackTrace();
+            //}
             System.out.println("Клиент закончил работу");
             return "Nope";
         }
